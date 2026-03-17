@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0a0a1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="मक्का मस्जिद">
+<title>मक्का मस्जिद — इचलकरंजी</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Amiri:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#050510;min-height:100vh;padding:8px;}
+.board{background:#0a0a1a;border:6px solid #1a1a2e;border-radius:12px;padding:12px;font-family:'Orbitron',monospace;max-width:600px;margin:0 auto;}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;}
+.clock-box{background:#000;border:2px solid #1a3a1a;border-radius:6px;padding:8px 12px;text-align:center;min-width:110px;}
+.main-time{font-size:28px;font-weight:900;color:#00ff88;letter-spacing:2px;line-height:1;}
+.day-lbl{font-size:10px;color:#ff4444;letter-spacing:2px;margin-top:2px;font-family:'Noto Sans Devanagari',sans-serif;}
+.sec{font-size:14px;color:#ffaa00;font-weight:700;}
+.center-panel{flex:1;text-align:center;padding:4px;}
+.kalima{font-family:'Amiri',serif;color:#ffd700;font-size:22px;line-height:1.5;}
+.status-line{color:#555;font-size:9px;margin-top:4px;font-family:'Noto Sans Devanagari',sans-serif;}
+.sdot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#00ff88;margin-right:4px;animation:pulse 1.5s infinite;vertical-align:middle;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes marquee{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+.next-box{background:#000;border:2px solid #1a2a3a;border-radius:6px;padding:8px 12px;text-align:center;min-width:115px;cursor:pointer;position:relative;}
+.next-time{font-size:22px;font-weight:900;color:#00aaff;}
+.next-lbl{font-size:9px;color:#888;margin-top:2px;font-family:'Noto Sans Devanagari',sans-serif;}
+.next-name{font-size:11px;color:#ffaa00;font-weight:700;margin-top:2px;font-family:'Noto Sans Devanagari',sans-serif;}
+.cd-badge{display:inline-block;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);border-radius:4px;padding:2px 8px;font-size:9px;color:#00ff88;margin-top:4px;font-family:'Noto Sans Devanagari',sans-serif;}
+.edit-hint{font-size:8px;color:#333;margin-top:3px;font-family:'Noto Sans Devanagari',sans-serif;}
+.pulsing{animation:pulse 2s infinite;}
+.je-popup{display:none;position:absolute;top:100%;right:0;z-index:100;background:#0a0a20;border:2px solid rgba(255,215,0,.4);border-radius:10px;padding:12px;min-width:220px;margin-top:4px;}
+.je-popup.open{display:block;}
+.je-popup-title{font-family:'Noto Sans Devanagari',sans-serif;color:#ffd700;font-size:11px;font-weight:700;margin-bottom:8px;text-align:center;}
+.je-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+.je-name{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:#ffdd44;font-weight:700;min-width:54px;}
+.je-urdu{font-family:'Amiri',serif;font-size:13px;color:#555;min-width:24px;}
+.je-inp{background:#000;border:1px solid #2a2200;border-radius:4px;color:#ff4444;font-family:'Orbitron',monospace;font-size:12px;padding:3px 6px;flex:1;text-align:center;outline:none;}
+.je-inp:focus{border-color:rgba(255,215,0,.5);color:#ffd700;}
+.je-btns{display:flex;gap:6px;margin-top:8px;}
+.je-save{background:rgba(0,255,136,.12);border:1px solid rgba(0,255,136,.4);border-radius:5px;color:#00ff88;font-size:10px;padding:4px 0;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;flex:1;}
+.je-close{background:none;border:1px solid #333;border-radius:5px;color:#666;font-size:10px;padding:4px 0;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;flex:1;}
+.je-saved{font-family:'Noto Sans Devanagari',sans-serif;font-size:10px;color:#00ff88;text-align:center;margin-top:5px;display:none;}
+.ramzan-banner{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.sehri-box{background:#0d1b2a;border:2px solid #1a3a5a;border-radius:8px;padding:8px 12px;text-align:center;}
+.iftar-box{background:#1a0d00;border:2px solid #5a3a00;border-radius:8px;padding:8px 12px;text-align:center;}
+.si-lbl{font-family:'Noto Sans Devanagari',sans-serif;font-size:10px;margin-bottom:2px;}
+.si-time{font-size:22px;font-weight:900;letter-spacing:2px;margin:2px 0;}
+.si-sub{font-family:'Noto Sans Devanagari',sans-serif;font-size:9px;color:#555;}
+.si-cd{font-family:'Noto Sans Devanagari',sans-serif;font-size:10px;margin-top:3px;padding:2px 8px;border-radius:4px;display:inline-block;}
+.sc{color:#44aaff;}.ic{color:#ffaa00;}
+.scd{background:rgba(68,170,255,.1);border:1px solid rgba(68,170,255,.3);color:#44aaff;}
+.icd{background:rgba(255,170,0,.1);border:1px solid rgba(255,170,0,.3);color:#ffaa00;}
+.azan-ctrl{background:#050510;border:1px solid rgba(255,215,0,.2);border-radius:8px;padding:8px 12px;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.azan-ctrl-lbl{font-family:'Noto Sans Devanagari',sans-serif;color:#ffd700;font-size:11px;font-weight:700;flex:1;}
+.azan-test-btn{background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.35);border-radius:5px;color:#ffd700;font-size:10px;padding:4px 10px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;}
+.azan-toggle{background:rgba(255,170,0,.1);border:1px solid rgba(255,170,0,.3);border-radius:5px;color:#ffaa00;font-size:10px;padding:4px 10px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;}
+.azan-toggle.on{background:rgba(0,255,136,.1);border-color:rgba(0,255,136,.3);color:#00ff88;}
+.elaan-section{margin-bottom:10px;}
+.elaan-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.elaan-lbl{font-family:'Noto Sans Devanagari',sans-serif;color:#ffd700;font-size:11px;font-weight:700;}
+.elaan-add-btn{background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.35);border-radius:5px;color:#ffd700;font-size:10px;padding:3px 10px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;}
+.ticker-wrap{background:#000;border:1px solid #2a2200;border-radius:6px;padding:7px 0;overflow:hidden;min-height:32px;margin-bottom:5px;}
+.ticker-inner{white-space:nowrap;animation:marquee 18s linear infinite;display:inline-block;padding-left:100%;font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:#ffd700;}
+.ticker-empty{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:#444;text-align:center;padding:3px 0;}
+.elaan-list{display:flex;flex-direction:column;gap:5px;}
+.elaan-item{background:#0a0800;border:1px solid #2a2000;border-radius:6px;padding:6px 10px;display:flex;align-items:flex-start;gap:8px;}
+.elaan-text{font-family:'Noto Sans Devanagari',sans-serif;font-size:12px;color:#ffdd88;flex:1;line-height:1.5;}
+.elaan-date{font-size:9px;color:#555;font-family:'Noto Sans Devanagari',sans-serif;white-space:nowrap;}
+.elaan-del{background:none;border:none;color:#ff4444;cursor:pointer;font-size:13px;padding:0;opacity:.6;}
+.elaan-form{background:#050510;border:1px solid #2a2000;border-radius:8px;padding:10px;margin-bottom:6px;display:none;}
+.elaan-form.show{display:block;}
+.elaan-form textarea{width:100%;background:#000;border:1px solid #2a2200;border-radius:5px;color:#ffdd88;font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;padding:8px;resize:none;height:65px;outline:none;}
+.form-btns{display:flex;gap:8px;margin-top:6px;justify-content:flex-end;}
+.btn-s{background:rgba(255,215,0,.15);border:1px solid rgba(255,215,0,.5);border-radius:5px;color:#ffd700;padding:5px 14px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;}
+.btn-c{background:none;border:1px solid #333;border-radius:5px;color:#666;padding:5px 14px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;}
+.notif-bar{background:rgba(255,170,0,.08);border:1px solid rgba(255,170,0,.25);border-radius:6px;padding:5px 10px;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.notif-text{color:#ffaa00;font-size:10px;font-family:'Noto Sans Devanagari',sans-serif;flex:1;}
+.notif-btn{background:rgba(255,170,0,.15);border:1px solid rgba(255,170,0,.4);border-radius:4px;color:#ffaa00;font-size:9px;padding:3px 10px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;}
+.pt{width:100%;border-collapse:collapse;margin-bottom:10px;}
+.pt th{color:#888;font-size:9px;letter-spacing:2px;padding:4px 6px;border-bottom:1px solid #1a1a2e;text-align:center;font-family:'Noto Sans Devanagari',sans-serif;}
+.pt th:first-child{text-align:left;}
+.pt td{padding:5px 6px;font-size:12px;text-align:center;border-bottom:1px solid rgba(255,255,255,.04);}
+.pnc{text-align:left !important;font-size:12px;font-weight:700;font-family:'Noto Sans Devanagari',sans-serif;color:#ffdd44;}
+.tg{color:#00ff88;}.to{color:#ffaa00;}.tb{color:#44aaff;}.tr{color:#ff4444;}
+.ar{background:rgba(0,255,136,.06);}.ar .pnc{color:#00ff88;}
+.un{font-family:'Amiri',serif;font-size:15px;color:#666;text-align:right !important;}
+.bg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.mt2{background:#050510;border:1px solid #1a1a2e;border-radius:6px;padding:8px;}
+.mt2 table{width:100%;border-collapse:collapse;}
+.mt2 td{font-size:10px;padding:3px 4px;}
+.ml2{color:#888;font-size:9px;font-family:'Noto Sans Devanagari',sans-serif;}
+.db{background:#000;border:2px solid #1a2a1a;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;text-align:center;}
+.dn{font-size:24px;font-weight:900;color:#ff6644;letter-spacing:2px;}
+.footer{text-align:center;border-top:1px solid #1a1a2e;padding-top:8px;}
+.ma{font-family:'Amiri',serif;color:#ffd700;font-size:17px;opacity:.8;margin-bottom:2px;}
+.mn2{color:#ffd700;font-size:12px;font-weight:700;font-family:'Noto Sans Devanagari',sans-serif;}
+.ms{color:#555;font-size:9px;margin-top:2px;font-family:'Noto Sans Devanagari',sans-serif;}
+.ao{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.92);z-index:999;align-items:center;justify-content:center;}
+.ao.show{display:flex;}
+.ac{background:#0a0a1a;border:2px solid #ffd700;border-radius:14px;padding:24px;text-align:center;max-width:300px;width:90%;}
+.aa{font-family:'Amiri',serif;font-size:36px;color:#ffd700;}
+.at2{font-family:'Noto Sans Devanagari',sans-serif;font-size:18px;color:#fff;margin:10px 0 4px;font-weight:700;}
+.as2{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:#888;}
+.azan-popup-btns{display:flex;gap:8px;margin-top:16px;justify-content:center;}
+.acl{background:rgba(255,215,0,.12);border:1px solid #ffd700;border-radius:6px;color:#ffd700;padding:8px 20px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;}
+.astop{background:rgba(255,68,68,.12);border:1px solid #ff4444;border-radius:6px;color:#ff4444;padding:8px 20px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;}
+</style>
+</head>
+<body>
+<div class="board">
+  <div class="top-bar">
+    <div class="clock-box">
+      <div class="main-time" id="mtime">--:--</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="day-lbl" id="dlbl">---</div>
+        <div class="sec" id="slbl">--</div>
+      </div>
+    </div>
+    <div class="center-panel">
+      <div class="kalima">لَا إِلٰهَ إِلَّا اللّٰهُ مُحَمَّدٌ رَّسُوْلُ اللّٰهِ</div>
+      <div class="status-line"><span class="sdot"></span>इचलकरंजी · लाइव</div>
+    </div>
+    <div class="next-box" id="nextBox" onclick="toggleJePopup()">
+      <div class="next-time" id="ntime">--:--</div>
+      <div class="next-name" id="nname">------</div>
+      <div class="next-lbl">अगली जमात</div>
+      <div class="cd-badge pulsing" id="ncd">-- मिनट</div>
+      <div class="edit-hint">✏️ टाइम बदलने के लिए दबाएं</div>
+      <div class="je-popup" id="jePopup" onclick="event.stopPropagation()">
+        <div class="je-popup-title">⏱ जमात टाइम सेट करें</div>
+        <div class="je-row"><span class="je-name">फजर</span><span class="je-urdu">فجر</span><input class="je-inp" id="jf" type="time" value="05:45"></div>
+        <div class="je-row"><span class="je-name">ज़ुहर</span><span class="je-urdu">ظہر</span><input class="je-inp" id="jz" type="time" value="13:30"></div>
+        <div class="je-row"><span class="je-name">असर</span><span class="je-urdu">عصر</span><input class="je-inp" id="ja" type="time" value="17:00"></div>
+        <div class="je-row"><span class="je-name">मग़रिब</span><span class="je-urdu">مغرب</span><input class="je-inp" id="jm" type="time" value="18:50"></div>
+        <div class="je-row"><span class="je-name">इशा</span><span class="je-urdu">عشاء</span><input class="je-inp" id="ji" type="time" value="20:15"></div>
+        <div class="je-row"><span class="je-name">जुमा</span><span class="je-urdu">جمعہ</span><input class="je-inp" id="jj" type="time" value="13:30"></div>
+        <div class="je-btns">
+          <button class="je-close" onclick="toggleJePopup()">बंद करें</button>
+          <button class="je-save" onclick="saveJamaat()">✓ सेव</button>
+        </div>
+        <div class="je-saved" id="jsaved">✓ सेव हो गया!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Azan Audio Control -->
+  <div class="azan-ctrl">
+    <span style="font-size:18px;">🔊</span>
+    <span class="azan-ctrl-lbl">अज़ान — مسجد الحرام مکہ<br><span style="font-size:9px;color:#555;font-weight:400;">हर नमाज़ पर मक्का की अज़ान बजेगी</span></span>
+    <button class="azan-test-btn" onclick="testAzan()">▶ Test</button>
+    <button class="azan-toggle" id="azanToggle" onclick="toggleAzanAudio()">चालू करें</button>
+  </div>
+
+  <div class="ramzan-banner">
+    <div class="sehri-box"><div class="si-lbl sc">سحری · सहरी</div><div class="si-time sc" id="stime">--:--</div><div class="si-sub">फजर से 10 मिनट पहले</div><div class="si-cd scd pulsing" id="scd">-- मिनट बाकी</div></div>
+    <div class="iftar-box"><div class="si-lbl ic">افطار · इफ्तار</div><div class="si-time ic" id="itime">--:--</div><div class="si-sub">मग़रिब अज़ान पर</div><div class="si-cd icd pulsing" id="icd">-- मिनट बाकी</div></div>
+  </div>
+
+  <div class="elaan-section">
+    <div class="elaan-header">
+      <span class="elaan-lbl">📢 एलान &nbsp;<span style="font-family:'Amiri',serif;font-size:14px;opacity:.7;">اعلان</span></span>
+      <button class="elaan-add-btn" onclick="toggleForm()">+ नया एलान</button>
+    </div>
+    <div class="ticker-wrap"><div class="ticker-empty" id="tempty">कोई एलान नहीं — + बटन दबाएं</div><div class="ticker-inner" id="tinner" style="display:none;"></div></div>
+    <div class="elaan-form" id="eform"><textarea id="einput" placeholder="यहाँ एलान लिखें..."></textarea><div class="form-btns"><button class="btn-c" onclick="toggleForm()">रद्द करें</button><button class="btn-s" onclick="saveElaan()">💾 सेव करें</button></div></div>
+    <div class="elaan-list" id="elist"></div>
+  </div>
+
+  <div class="notif-bar" id="nbar"><span style="font-size:14px;">🔔</span><span class="notif-text" id="ntxt">सहरी / इफ्तार / अज़ान notification चालू करें</span><button class="notif-btn" id="nbtn" onclick="toggleNotif()">चालू करें</button></div>
+
+  <table class="pt"><thead><tr><th>नमाज़</th><th>शुरू</th><th>खत्म</th><th>अज़ान</th><th>जमात</th><th></th></tr></thead><tbody id="ptbody"></tbody></table>
+
+  <div class="bg">
+    <div class="mt2"><table>
+      <tr><td><span class="ml2">तुलू (सूर्योदय)</span></td><td class="tg" id="msr" style="text-align:right;font-size:12px;">--:--</td><td><span style="font-family:'Amiri',serif;color:#555;font-size:13px;">طلوع</span></td></tr>
+      <tr><td><span class="ml2">ज़वाल</span></td><td class="to" id="mzw" style="text-align:right;font-size:12px;">--:--</td><td><span style="font-family:'Amiri',serif;color:#555;font-size:13px;">زوال</span></td></tr>
+      <tr><td><span class="ml2">गुरूब (सूर्यास्त)</span></td><td class="tg" id="mss" style="text-align:right;font-size:12px;">--:--</td><td><span style="font-family:'Amiri',serif;color:#555;font-size:13px;">غروب</span></td></tr>
+      <tr><td><span class="ml2">इशराक</span></td><td class="tb" id="miq" style="text-align:right;font-size:12px;">--:--</td><td><span style="font-family:'Amiri',serif;color:#555;font-size:13px;">اشراق</span></td></tr>
+      <tr><td><span class="ml2">चाश्त</span></td><td class="to" id="mch" style="text-align:right;font-size:12px;">--:--</td><td><span style="font-family:'Amiri',serif;color:#555;font-size:13px;">چاشت</span></td></tr>
+      <tr><td><span class="ml2">तहज्जुद</span></td><td class="tr" id="mth" style="text-align:right;font-size:12px;">--:--</td><td><span style="font-family:'Amiri',serif;color:#555;font-size:13px;">تہجد</span></td></tr>
+    </table></div>
+    <div class="db">
+      <div class="dn" id="dnum">--</div>
+      <div style="font-size:12px;color:#00aaff;font-weight:700;font-family:'Noto Sans Devanagari',sans-serif;" id="dmon">------</div>
+      <div id="dyr" style="color:#555;font-size:11px;letter-spacing:2px;margin-top:2px;font-family:'Orbitron',monospace;">----</div>
+      <div style="font-family:'Amiri',serif;color:#888;font-size:12px;margin-top:3px;" id="disl">...</div>
+      <div style="font-family:'Amiri',serif;color:#ffd700;font-size:24px;opacity:.5;margin-top:2px;">اَللّٰهُ اَكْبَر</div>
+    </div>
+  </div>
+  <div class="footer"><div class="ma">مکہ مسجد</div><div class="mn2">🕌 मक्का मस्जिद — इचलकरंजी, महाराष्ट्र</div><div class="ms">अक्षांश: 16.69°N | देशांतर: 74.46°E | स्वचालित नमाज़ वक्त</div></div>
+</div>
+
+<!-- Azan Popup -->
+<div class="ao" id="azano">
+  <div class="ac">
+    <div class="aa">اللهُ أَكْبَر</div>
+    <div style="font-family:'Amiri',serif;font-size:20px;color:#ffd700;margin-top:6px;">أَشْهَدُ أَن لَّا إِلَٰهَ إِلَّا ٱللَّٰهُ</div>
+    <div class="at2" id="aztitle">अज़ान का वक्त</div>
+    <div class="as2" id="azsub">मक्का मस्जिद — इचलकरंजी</div>
+    <div class="azan-popup-btns">
+      <button class="astop" onclick="stopAzan()">⏹ बंद करें</button>
+      <button class="acl" onclick="closeAzan()">ठीक है</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LAT=16.6904,LON=74.46,TZ=5.5;
+const HD=['रवि','सोम','मंगल','बुध','गुरु','शुक्र','शनि'];
+const HM=['जनवरी','फरवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्टूबर','नवंबर','दिसंबर'];
+const IM=['محرم','صفر','ربيع الأول','ربيع الثاني','جمادى الأولى','جمادى الثانية','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
+const pH={FAJR:'फजर',ZUHAR:'ज़ुहर',ASR:'असर',MAGRIB:'मग़रिब',"ISHA'":'इशा',"JUM'AH":'जुमा'};
+const pU={FAJR:'فجر',ZUHAR:'ظہر',ASR:'عصر',MAGRIB:'مغرب',"ISHA'":'عشاء',"JUM'AH":'جمعہ'};
+let nOn=false,nFor={},ptd=null,eList=[];
+let cJ={FAJR:[5,45],ZUHAR:[13,30],ASR:[17,0],MAGRIB:[18,50],"ISHA'":[20,15],"JUM'AH":[13,30]};
+let azanAudioOn=false, azanAudio=null, azanPlaying=false;
+
+// Makkah Azan audio URL (free Islamic audio)
+const AZAN_URL='https://islamicfinder.org/prayer/azan/makkah-azan.mp3';
+const AZAN_URLS=[
+  'https://cdn.islamic.network/prayer-times/adhan-afasy.mp3',
+  'https://www.islamicfinder.org/prayer/azan/azan.mp3'
+];
+let azanUrlIdx=0;
+
+function initAudio(){
+  if(!azanAudio){
+    azanAudio=new Audio();
+    azanAudio.volume=1.0;
+    azanAudio.src=AZAN_URLS[azanUrlIdx];
+    azanAudio.onerror=()=>{
+      azanUrlIdx=(azanUrlIdx+1)%AZAN_URLS.length;
+      azanAudio.src=AZAN_URLS[azanUrlIdx];
+    };
+  }
+}
+
+function toggleAzanAudio(){
+  initAudio();
+  azanAudioOn=!azanAudioOn;
+  const btn=document.getElementById('azanToggle');
+  if(azanAudioOn){btn.textContent='✓ चालू है';btn.classList.add('on');}
+  else{btn.textContent='चालू करें';btn.classList.remove('on');stopAzan();}
+}
+
+function testAzan(){
+  initAudio();
+  azanAudio.currentTime=0;
+  azanAudio.play().catch(()=>{alert('Browser ने audio block की। Page पर click करें फिर Test दबाएं।');});
+  document.getElementById('aztitle').textContent='Test — अज़ान';
+  document.getElementById('azsub').textContent='مسجد الحرام مکہ مکرمہ';
+  document.getElementById('azano').classList.add('show');
+}
+
+function playAzan(pname){
+  initAudio();
+  azanAudio.currentTime=0;
+  azanAudio.play().catch(()=>{});
+  azanPlaying=true;
+  document.getElementById('aztitle').textContent=(pH[pname]||pname)+' की अज़ान';
+  document.getElementById('azsub').textContent='مسجد الحرام مکہ — مک्का मस्जिद इचलकरंजी';
+  document.getElementById('azano').classList.add('show');
+  if(nOn&&Notification&&Notification.permission==='granted'){
+    new Notification('🕌 '+(pH[pname]||pname)+' की अज़ान',{body:'मक्का मस्जिद, इचलकरंजी\nनमाज़ का वक्त हो गया है'});
+  }
+}
+
+function stopAzan(){if(azanAudio){azanAudio.pause();azanAudio.currentTime=0;azanPlaying=false;}}
+function closeAzan(){document.getElementById('azano').classList.remove('show');}
+
+function toggleJePopup(){document.getElementById('jePopup').classList.toggle('open');}
+function pT(v){const[h,m]=v.split(':').map(Number);return[h,m];}
+function saveJamaat(){cJ.FAJR=pT(document.getElementById('jf').value);cJ.ZUHAR=pT(document.getElementById('jz').value);cJ.ASR=pT(document.getElementById('ja').value);cJ.MAGRIB=pT(document.getElementById('jm').value);cJ["ISHA'"]=pT(document.getElementById('ji').value);cJ["JUM'AH"]=pT(document.getElementById('jj').value);const s=document.getElementById('jsaved');s.style.display='block';setTimeout(()=>{s.style.display='none';document.getElementById('jePopup').classList.remove('open');},1500);}
+function toRad(d){return d*Math.PI/180;} function toDeg(r){return r*180/Math.PI;}
+function calcPT(date){const y=date.getFullYear(),mo=date.getMonth()+1,d=date.getDate();const JD=Math.floor(365.25*(y+4716))+Math.floor(30.6001*(mo+1))+d-1524.5;const D=JD-2451545,g=toRad((357.529+0.98560028*D)%360),q=(280.459+0.98564736*D)%360;const L=toRad((q+1.915*Math.sin(g)+.02*Math.sin(2*g))%360),e=toRad(23.439-.00000036*D);const RA=toDeg(Math.atan2(Math.cos(e)*Math.sin(L),Math.cos(L)))/15,dec=Math.asin(Math.sin(e)*Math.sin(L));const EqT=q/15-RA,Dh=12+TZ-LON/15-EqT;function sat(a,af){const c=(Math.sin(toRad(a))-Math.sin(toRad(LAT))*Math.sin(dec))/(Math.cos(toRad(LAT))*Math.cos(dec));if(Math.abs(c)>1)return null;const H=toDeg(Math.acos(c))/15;return af?Dh+H:Dh-H;}function asrT(){const t=Math.atan(1/(1+Math.tan(Math.abs(toRad(LAT)-dec))));const c=(Math.sin(t)-Math.sin(toRad(LAT))*Math.sin(dec))/(Math.cos(toRad(LAT))*Math.cos(dec));if(Math.abs(c)>1)return null;return Dh+toDeg(Math.acos(c))/15;}function hm(h){if(h===null)return[0,0];const t=((h%24)+24)%24,hr=Math.floor(t),mn=Math.round((t-hr)*60);return mn===60?[hr+1,0]:[hr,mn];}function aM(a,m){const t=a[0]*60+a[1]+m;return[Math.floor(((t%1440)+1440)%1440/60),((t%1440)+1440)%1440%60];}const fj=sat(-18,false),su=sat(-.833,false),as=asrT(),sn=sat(-.833,true),is=sat(-17,true);const sr=hm(su),ssx=hm(sn),dh=hm(Dh),fh=hm(fj);return{fajr:fh,sunrise:sr,dhuhr:dh,asr:hm(as),sunset:ssx,isha:hm(is),ishraq:su?hm(su+.27):null,chasht:(su&&sn)?hm((su+sn)/2-1):null,tahajjud:is?hm(is+.5):null,zawal:dh,sehri:aM(fh,-10),iftar:ssx,prayers:[{name:'FAJR',start:fh,end:sr,azan:aM(fh,2)},{name:'ZUHAR',start:dh,end:hm(as),azan:aM(dh,5)},{name:'ASR',start:hm(as),end:ssx,azan:aM(hm(as),5)},{name:'MAGRIB',start:ssx,end:aM(ssx,70),azan:ssx},{name:"ISHA'",start:hm(is),end:aM(fh,-60),azan:aM(hm(is),5)},{name:"JUM'AH",start:dh,end:hm(as),azan:null}]};}
+function fmt(a){return a?a[0]+':'+String(a[1]).padStart(2,'0'):'--:--';}
+function toM(a){return a[0]*60+a[1];}
+function getID(date){const jd=Math.floor(date.getTime()/86400000+2440587.5);let l=jd-1948440+10632;const n=Math.floor((l-1)/10631);l=l-10631*n+354;const j=Math.floor((10985-l)/5316)*Math.floor((50*l)/17719)+Math.floor(l/5670)*Math.floor((43*l)/15238);l=l-Math.floor((30-j)/15)*Math.floor((17719*j)/50)-Math.floor(j/16)*Math.floor((15238*j)/43)+29;const mo=Math.floor((24*(l-1))/709),day=l-Math.floor((709*mo)/24),yr=30*n+j-30;return{day,month:mo-1,year:yr};}
+function toggleForm(){const f=document.getElementById('eform');f.classList.toggle('show');if(f.classList.contains('show'))document.getElementById('einput').focus();else document.getElementById('einput').value='';}
+function saveElaan(){const txt=document.getElementById('einput').value.trim();if(!txt)return;const now=new Date();eList.unshift({id:Date.now(),text:txt,date:now.getDate()+'/'+(now.getMonth()+1)+' '+HD[now.getDay()]});document.getElementById('einput').value='';document.getElementById('eform').classList.remove('show');rElaan();}
+function delElaan(id){eList=eList.filter(e=>e.id!==id);rElaan();}
+function rElaan(){const le=document.getElementById('elist'),em=document.getElementById('tempty'),ti=document.getElementById('tinner');if(!eList.length){em.style.display='block';ti.style.display='none';le.innerHTML='';return;}em.style.display='none';ti.style.display='inline-block';ti.textContent='📢 '+eList.map(e=>e.text).join('   ·   📢 ');le.innerHTML='';eList.forEach(e=>{const div=document.createElement('div');div.className='elaan-item';div.innerHTML=`<div style="font-size:15px;margin-top:1px;">📢</div><div class="elaan-text">${e.text}</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;"><span class="elaan-date">${e.date}</span><button class="elaan-del" onclick="delElaan(${e.id})">✕</button></div>`;le.appendChild(div);});}
+function toggleNotif(){if(!nOn){if(Notification&&Notification.permission!=='granted'){Notification.requestPermission().then(p=>{if(p==='granted'){nOn=true;uNotif();}else document.getElementById('ntxt').textContent='Browser permission नहीं मिली';});}else{nOn=true;uNotif();}}else{nOn=false;uNotif();}}
+function uNotif(){const bar=document.getElementById('nbar'),btn=document.getElementById('nbtn'),txt=document.getElementById('ntxt');if(nOn){btn.textContent='बंद करें';txt.textContent='Notification चालू है ✓';bar.style.background='rgba(0,255,136,.06)';bar.style.borderColor='rgba(0,255,136,.3)';txt.style.color='#00ff88';btn.style.color='#00ff88';btn.style.borderColor='rgba(0,255,136,.5)';}else{btn.textContent='चालू करें';txt.textContent='सहरी / इफ्तार / अज़ान notification चालू करें';bar.style.background='rgba(255,170,0,.08)';bar.style.borderColor='rgba(255,170,0,.25)';txt.style.color='#ffaa00';btn.style.color='#ffaa00';btn.style.borderColor='rgba(255,170,0,.4)';}}
+function cdTxt(d){if(d<=0)return'अभी';if(d<60)return d+' मिनट बाकी';return Math.floor(d/60)+' घं '+d%60+' मि बाकी';}
+function update(){const now=new Date(),h=now.getHours(),m=now.getMinutes(),s=now.getSeconds(),curM=h*60+m;document.getElementById('mtime').textContent=h+':'+String(m).padStart(2,'0');document.getElementById('slbl').textContent=String(s).padStart(2,'0');document.getElementById('dlbl').textContent=HD[now.getDay()];document.getElementById('dnum').textContent=String(now.getDate()).padStart(2,'0');document.getElementById('dmon').textContent=HM[now.getMonth()];document.getElementById('dyr').textContent=now.getFullYear();const isl=getID(now);document.getElementById('disl').textContent=isl.day+' '+IM[isl.month]+' '+isl.year+' هـ';if(!ptd)ptd=calcPT(now);const p=ptd;if(p.sunrise)document.getElementById('msr').textContent=fmt(p.sunrise);if(p.zawal)document.getElementById('mzw').textContent=fmt(p.zawal);if(p.sunset)document.getElementById('mss').textContent=fmt(p.sunset);if(p.ishraq)document.getElementById('miq').textContent=fmt(p.ishraq);if(p.chasht)document.getElementById('mch').textContent=fmt(p.chasht);if(p.tahajjud)document.getElementById('mth').textContent=fmt(p.tahajjud);document.getElementById('stime').textContent=fmt(p.sehri);document.getElementById('itime').textContent=fmt(p.iftar);const sd=toM(p.sehri)-curM,id2=toM(p.iftar)-curM;document.getElementById('scd').textContent=sd>0?cdTxt(sd):(sd>-10?'सहरी का वक्त!':'बंद हो गई');document.getElementById('icd').textContent=id2>0?cdTxt(id2):(id2>-5?'इफ्तार का वक्त!':'हो चुकी');const key=now.toDateString();const prayers=p.prayers.map(x=>({...x,jamaat:cJ[x.name]||[0,0]}));let active=null,next=null,minD=Infinity;prayers.forEach(x=>{const sm=toM(x.start),em=toM(x.end);if(curM>=sm&&curM<em)active=x.name;const jm=toM(x.jamaat);if(jm>curM&&jm-curM<minD){minD=jm-curM;next=x;}if(x.azan){const am=toM(x.azan),k=x.name+key;if(curM===am&&s<5&&!nFor[k]){nFor[k]=true;if(azanAudioOn)playAzan(x.name);else if(nOn&&Notification&&Notification.permission==='granted'){new Notification('🕌 '+(pH[x.name]||x.name)+' की अज़ान',{body:'मक्का मस्जिद, इचलकरंजी'});}}}});if(!next)next=prayers[0];document.getElementById('ntime').textContent=fmt(next.jamaat);document.getElementById('nname').textContent=(pH[next.name]||next.name)+' '+(pU[next.name]||'');document.getElementById('ncd').textContent=minD<Infinity?minD+' मिनट':'कल';const tb=document.getElementById('ptbody');tb.innerHTML='';prayers.forEach(x=>{const tr=document.createElement('tr');if(x.name===active)tr.className='ar';tr.innerHTML=`<td class="pnc">${x.name===active?'▶ ':''}${pH[x.name]||x.name}</td><td class="tg">${fmt(x.start)}</td><td class="to">${fmt(x.end)}</td><td class="tb">${x.azan?fmt(x.azan):'---'}</td><td class="tr">${fmt(x.jamaat)}</td><td class="un">${pU[x.name]||''}</td>`;tb.appendChild(tr);});}
+rElaan();update();setInterval(update,1000);
+</script>
+</body>
+</html>
