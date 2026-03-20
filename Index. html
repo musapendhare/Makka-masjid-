@@ -1,1 +1,251 @@
-https://github.com/musapendhare/Makka-masjid-
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0a0a1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="मक्का मस्जिद">
+<title>मक्का मस्जिद — इचलकरंजी</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Amiri:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#050510;min-height:100vh;padding:8px;}
+.board{background:#0a0a1a;border:6px solid #1a1a2e;border-radius:12px;padding:12px;font-family:'Orbitron',monospace;max-width:600px;margin:0 auto;}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;}
+.clock-box{background:#000;border:2px solid #1a3a1a;border-radius:6px;padding:8px 12px;text-align:center;min-width:110px;}
+.main-time{font-size:28px;font-weight:900;color:#00ff88;letter-spacing:2px;line-height:1;}
+.day-lbl{font-size:10px;color:#ff4444;letter-spacing:2px;margin-top:2px;font-family:'Noto Sans Devanagari',sans-serif;}
+.sec{font-size:14px;color:#ffaa00;font-weight:700;}
+.center-panel{flex:1;text-align:center;padding:4px;}
+.kalima{font-family:'Amiri',serif;color:#ffd700;font-size:22px;line-height:1.5;}
+.status-line{color:#555;font-size:9px;margin-top:4px;font-family:'Noto Sans Devanagari',sans-serif;}
+.sdot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#00ff88;margin-right:4px;animation:pulse 1.5s infinite;vertical-align:middle;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes marquee{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+.next-box{background:#000;border:2px solid #1a2a3a;border-radius:6px;padding:8px 12px;text-align:center;min-width:115px;cursor:pointer;position:relative;}
+.next-time{font-size:22px;font-weight:900;color:#00aaff;}
+.next-lbl{font-size:9px;color:#888;margin-top:2px;font-family:'Noto Sans Devanagari',sans-serif;}
+.next-name{font-size:11px;color:#ffaa00;font-weight:700;margin-top:2px;font-family:'Noto Sans Devanagari',sans-serif;}
+.cd-badge{display:inline-block;background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);border-radius:4px;padding:2px 8px;font-size:9px;color:#00ff88;margin-top:4px;font-family:'Noto Sans Devanagari',sans-serif;}
+.edit-hint{font-size:8px;color:#333;margin-top:3px;font-family:'Noto Sans Devanagari',sans-serif;}
+.pulsing{animation:pulse 2s infinite;}
+.je-popup{display:none;position:absolute;top:100%;right:0;z-index:100;background:#0a0a20;border:2px solid rgba(255,215,0,.4);border-radius:10px;padding:12px;min-width:220px;margin-top:4px;}
+.je-popup.open{display:block;}
+.je-popup-title{font-family:'Noto Sans Devanagari',sans-serif;color:#ffd700;font-size:11px;font-weight:700;margin-bottom:8px;text-align:center;}
+.je-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+.je-name{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:#ffdd44;font-weight:700;min-width:54px;}
+.je-urdu{font-family:'Amiri',serif;font-size:13px;color:#555;min-width:24px;}
+.je-inp{background:#000;border:1px solid #2a2200;border-radius:4px;color:#ff4444;font-family:'Orbitron',monospace;font-size:12px;padding:3px 6px;flex:1;text-align:center;outline:none;}
+.je-inp:focus{border-color:rgba(255,215,0,.5);color:#ffd700;}
+.je-btns{display:flex;gap:6px;margin-top:8px;}
+.je-save{background:rgba(0,255,136,.12);border:1px solid rgba(0,255,136,.4);border-radius:5px;color:#00ff88;font-size:10px;padding:4px 0;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;flex:1;}
+.je-close{background:none;border:1px solid #333;border-radius:5px;color:#666;font-size:10px;padding:4px 0;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;flex:1;}
+.je-saved{font-family:'Noto Sans Devanagari',sans-serif;font-size:10px;color:#00ff88;text-align:center;margin-top:5px;display:none;}
+
+/* TIMING ADJUST SECTION */
+.timing-adj{background:#050510;border:2px solid rgba(0,170,255,.2);border-radius:8px;padding:10px 12px;margin-bottom:10px;}
+.timing-adj-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.timing-adj-title{font-family:'Noto Sans Devanagari',sans-serif;color:#44aaff;font-size:11px;font-weight:700;}
+.timing-adj-save{background:rgba(0,255,136,.12);border:1px solid rgba(0,255,136,.4);border-radius:5px;color:#00ff88;font-size:10px;padding:4px 12px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;}
+.adj-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.adj-item{background:#0a0a20;border:1px solid #1a1a2e;border-radius:6px;padding:7px 8px;}
+.adj-name{font-family:'Noto Sans Devanagari',sans-serif;font-size:10px;color:#ffdd44;font-weight:700;margin-bottom:5px;}
+.adj-controls{display:flex;align-items:center;gap:6px;}
+.adj-btn{background:#0a0a20;border:1px solid #2a2a3a;border-radius:4px;color:#aaa;font-size:16px;font-weight:700;width:28px;height:28px;cursor:pointer;text-align:center;line-height:26px;padding:0;font-family:'Orbitron',monospace;}
+.adj-btn:hover{border-color:#44aaff;color:#44aaff;}
+.adj-val{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#44aaff;min-width:50px;text-align:center;}
+.adj-saved{font-family:'Noto Sans Devanagari',sans-serif;font-size:10px;color:#00ff88;text-align:center;margin-top:6px;display:none;}
+
+.weather-box{background:#050510;border:1px solid #1a2a3a;border-radius:8px;padding:10px 12px;margin-bottom:10px;}
+.weather-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.weather-icon{font-size:32px;line-height:1;}
+.weather-main{flex:1;}
+.weather-temp{font-size:28px;font-weight:900;color:#44aaff;font-family:'Orbitron',monospace;line-height:1;}
+.weather-desc{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:#888;margin-top:2px;}
+.weather-city{font-family:'Noto Sans Devanagari',sans-serif;font-size:9px;color:#555;margin-top:1px;}
+.weather-details{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;}
+.wd-item{background:#0a0a20;border:1px solid #1a1a2e;border-radius:6px;padding:5px 8px;text-align:center;}
+.wd-val{font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#ffd700;}
+.wd-lbl{font-family:'Noto Sans Devanagari',sans-serif;font-size:8px;color:#555;margin-top:2px;}
+.forecast-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.fc-item{background:#0a0a20;border:1px solid #1a1a2e;border-radius:6px;padding:6px;text-align:center;}
+.fc-day{font-family:'Noto Sans Devanagari',sans-serif;font-size:9px;color:#888;margin-bottom:3px;}
+.fc-icon{font-size:18px;line-height:1;margin-bottom:3px;}
+.fc-temp{font-family:'Orbitron',monospace;font-size:11px;color:#44aaff;}
+.fc-minmax{font-family:'Noto Sans Devanagari',sans-serif;font-size:8px;color:#555;margin-top:2px;}
+.weather-loading{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:#555;text-align:center;padding:8px;}
+.maslak-badge{display:inline-block;background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.35);border-radius:4px;padding:2px 8px;font-family:'Noto Sans Devanagari',sans-serif;font-size:9px;color:#ffd700;margin-bottom:8px;}
+.ramzan-banner{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.sehri-box{background:#0d1b2a;border:2px solid #1a3a5a;border-radius:8px;padding:8px 12px;text-align:center;}
+.iftar-box{background:#1a0d00;border:2px solid #5a3a00;border-radius:8px;padding:8px 12px;text-align:center;}
+.si-lbl{font-family:'Noto Sans Devanagari',sans-serif;font-size:10px;margin-bottom:2px;}
+.si-time{font-size:22px;font-weight:900;letter-spacing:2px;margin:2px 0;}
+.si-sub{font-family:'Noto Sans Devanagari',sans-serif;font-size:9px;color:#555;}
+.si-cd{font-family:'Noto Sans Devanagari',sans-serif;font-size:10px;margin-top:3px;padding:2px 8px;border-radius:4px;display:inline-block;}
+.sc{color:#44aaff;}.ic{color:#ffaa00;}
+.scd{background:rgba(68,170,255,.1);border:1px solid rgba(68,170,255,.3);color:#44aaff;}
+.icd{background:rgba(255,170,0,.1);border:1px solid rgba(255,170,0,.3);color:#ffaa00;}
+.azan-ctrl{background:#050510;border:1px solid rgba(255,215,0,.2);border-radius:8px;padding:8px 12px;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+.azan-ctrl-lbl{font-family:'Noto Sans Devanagari',sans-serif;color:#ffd700;font-size:11px;font-weight:700;flex:1;}
+.azan-test-btn{background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.35);border-radius:5px;color:#ffd700;font-size:10px;padding:4px 10px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;}
+.azan-toggle{background:rgba(255,170,0,.1);border:1px solid rgba(255,170,0,.3);border-radius:5px;color:#ffaa00;font-size:10px;padding:4px 10px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;}
+.azan-toggle.on{background:rgba(0,255,136,.1);border-color:rgba(0,255,136,.3);color:#00ff88;}
+.elaan-section{margin-bottom:10px;}
+.elaan-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.elaan-lbl{font-family:'Noto Sans Devanagari',sans-serif;color:#ffd700;font-size:11px;font-weight:700;}
+.elaan-add-btn{background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.35);border-radius:5px;color:#ffd700;font-size:10px;padding:3px 10px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;}
+.ticker-wrap{background:#000;border:1px solid #2a2200;border-radius:6px;padding:7px 0;overflow:hidden;min-height:32px;margin-bottom:5px;}
+.ticker-inner{white-space:nowrap;animation:marquee 18s linear infinite;display:inline-block;padding-left:100%;font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:#ffd700;}
+.ticker-empty{font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;color:#444;text-align:center;padding:3px 0;}
+.elaan-list{display:flex;flex-direction:column;gap:5px;}
+.elaan-item{background:#0a0800;border:1px solid #2a2000;border-radius:6px;padding:6px 10px;display:flex;align-items:flex-start;gap:8px;}
+.elaan-text{font-family:'Noto Sans Devanagari',sans-serif;font-size:12px;color:#ffdd88;flex:1;line-height:1.5;}
+.elaan-date{font-size:9px;color:#555;font-family:'Noto Sans Devanagari',sans-serif;white-space:nowrap;}
+.elaan-del{background:none;border:none;color:#ff4444;cursor:pointer;font-size:13px;padding:0;opacity:.6;}
+.elaan-form{background:#050510;border:1px solid #2a2000;border-radius:8px;padding:10px;margin-bottom:6px;display:none;}
+.elaan-form.show{display:block;}
+.elaan-form textarea{width:100%;background:#000;border:1px solid #2a2200;border-radius:5px;color:#ffdd88;font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;padding:8px;resize:none;height:65px;outline:none;}
+.form-btns{display:flex;gap:8px;margin-top:6px;justify-content:flex-end;}
+.btn-s{background:rgba(255,215,0,.15);border:1px solid rgba(255,215,0,.5);border-radius:5px;color:#ffd700;padding:5px 14px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;}
+.btn-c{background:none;border:1px solid #333;border-radius:5px;color:#666;padding:5px 14px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;font-size:11px;}
+.notif-bar{background:rgba(255,170,0,.08);border:1px solid rgba(255,170,0,.25);border-radius:6px;padding:5px 10px;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.notif-text{color:#ffaa00;font-size:10px;font-family:'Noto Sans Devanagari',sans-serif;flex:1;}
+.notif-btn{background:rgba(255,170,0,.15);border:1px solid rgba(255,170,0,.4);border-radius:4px;color:#ffaa00;font-size:9px;padding:3px 10px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;}
+.pt{width:100%;border-collapse:collapse;margin-bottom:10px;}
+.pt th{color:#888;font-size:9px;letter-spacing:2px;padding:4px 6px;border-bottom:1px solid #1a1a2e;text-align:center;font-family:'Noto Sans Devanagari',sans-serif;}
+.pt th:first-child{text-align:left;}
+.pt td{padding:5px 6px;font-size:12px;text-align:center;border-bottom:1px solid rgba(255,255,255,.04);}
+.pnc{text-align:left !important;font-size:12px;font-weight:700;font-family:'Noto Sans Devanagari',sans-serif;color:#ffdd44;}
+.tg{color:#00ff88;}.to{color:#ffaa00;}.tb{color:#44aaff;}.tr{color:#ff4444;}
+.ar{background:rgba(0,255,136,.06);}.ar .pnc{color:#00ff88;}
+.un{font-family:'Amiri',serif;font-size:15px;color:#666;text-align:right !important;}
+.bg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.mt2{background:#050510;border:1px solid #1a1a2e;border-radius:6px;padding:8px;}
+.mt2 table{width:100%;border-collapse:collapse;}
+.mt2 td{font-size:10px;padding:3px 4px;}
+.ml2{color:#888;font-size:9px;font-family:'Noto Sans Devanagari',sans-serif;}
+.db{background:#000;border:2px solid #1a2a1a;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;text-align:center;}
+.dn{font-size:24px;font-weight:900;color:#ff6644;letter-spacing:2px;}
+.footer{text-align:center;border-top:1px solid #1a1a2e;padding-top:8px;}
+.ma{font-family:'Amiri',serif;color:#ffd700;font-size:17px;opacity:.8;margin-bottom:2px;}
+.mn2{color:#ffd700;font-size:12px;font-weight:700;font-family:'Noto Sans Devanagari',sans-serif;}
+.ms{color:#555;font-size:9px;margin-top:2px;font-family:'Noto Sans Devanagari',sans-serif;}
+.ao{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.92);z-index:999;align-items:center;justify-content:center;}
+.ao.show{display:flex;}
+.ac{background:#0a0a1a;border:2px solid #ffd700;border-radius:14px;padding:24px;text-align:center;max-width:300px;width:90%;}
+.aa{font-family:'Amiri',serif;font-size:36px;color:#ffd700;}
+.at2{font-family:'Noto Sans Devanagari',sans-serif;font-size:18px;color:#fff;margin:10px 0 4px;font-weight:700;}
+.as2{font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;color:#888;}
+.azan-popup-btns{display:flex;gap:8px;margin-top:16px;justify-content:center;}
+.acl{background:rgba(255,215,0,.12);border:1px solid #ffd700;border-radius:6px;color:#ffd700;padding:8px 20px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;}
+.astop{background:rgba(255,68,68,.12);border:1px solid #ff4444;border-radius:6px;color:#ff4444;padding:8px 20px;cursor:pointer;font-family:'Noto Sans Devanagari',sans-serif;font-size:13px;}
+</style>
+</head>
+<body>
+<div class="board">
+  <div class="top-bar">
+    <div class="clock-box">
+      <div class="main-time" id="mtime">--:--</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="day-lbl" id="dlbl">---</div>
+        <div class="sec" id="slbl">--</div>
+      </div>
+    </div>
+    <div class="center-panel">
+      <div class="kalima">لَا إِلٰهَ إِلَّا اللّٰهُ مُحَمَّدٌ رَّسُوْلُ اللّٰهِ</div>
+      <div class="status-line"><span class="sdot"></span>इचलकरंजी · लाइव · حنفی مسلک</div>
+    </div>
+    <div class="next-box" id="nextBox" onclick="toggleJePopup()">
+      <div class="next-time" id="ntime">--:--</div>
+      <div class="next-name" id="nname">------</div>
+      <div class="next-lbl">अगली जमात</div>
+      <div class="cd-badge pulsing" id="ncd">-- मिनट</div>
+      <div class="edit-hint">✏️ जमात टाइम बदलें</div>
+      <div class="je-popup" id="jePopup" onclick="event.stopPropagation()">
+        <div class="je-popup-title">⏱ जमात टाइम सेट करें</div>
+        <div class="je-row"><span class="je-name">फजर</span><span class="je-urdu">فجر</span><input class="je-inp" id="jf" type="time" value="05:45"></div>
+        <div class="je-row"><span class="je-name">ज़ुहर</span><span class="je-urdu">ظہر</span><input class="je-inp" id="jz" type="time" value="13:30"></div>
+        <div class="je-row"><span class="je-name">असर</span><span class="je-urdu">عصر</span><input class="je-inp" id="ja" type="time" value="17:30"></div>
+        <div class="je-row"><span class="je-name">मग़रिब</span><span class="je-urdu">مغرب</span><input class="je-inp" id="jm" type="time" value="18:50"></div>
+        <div class="je-row"><span class="je-name">इशा</span><span class="je-urdu">عشاء</span><input class="je-inp" id="ji" type="time" value="20:15"></div>
+        <div class="je-row"><span class="je-name">जुमा</span><span class="je-urdu">جمعہ</span><input class="je-inp" id="jj" type="time" value="13:30"></div>
+        <div class="je-btns">
+          <button class="je-close" onclick="toggleJePopup()">बंद करें</button>
+          <button class="je-save" onclick="saveJamaat()">✓ सेव</button>
+        </div>
+        <div class="je-saved" id="jsaved">✓ सेव हो गया!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEATHER -->
+  <div class="weather-box">
+    <div id="weatherContent"><div class="weather-loading">🌤 मौसम लोड हो रहा है...</div></div>
+  </div>
+
+  <!-- TIMING ADJUSTMENT -->
+  <div class="timing-adj">
+    <div class="timing-adj-header">
+      <span class="timing-adj-title">⚙️ नमाज़ का वक्त — कम / ज़्यादा करें</span>
+      <button class="timing-adj-save" onclick="saveAdj()">✓ सेव</button>
+    </div>
+    <div class="adj-grid">
+      <div class="adj-item">
+        <div class="adj-name">फजर شروع <span style="font-family:'Amiri',serif;">فجر</span></div>
+        <div class="adj-controls">
+          <button class="adj-btn" onclick="adjChange('fajr',-1)">−</button>
+          <span class="adj-val" id="adj_fajr">0 मि</span>
+          <button class="adj-btn" onclick="adjChange('fajr',+1)">+</button>
+        </div>
+      </div>
+      <div class="adj-item">
+        <div class="adj-name">ज़ुहर शुरू <span style="font-family:'Amiri',serif;">ظہر</span></div>
+        <div class="adj-controls">
+          <button class="adj-btn" onclick="adjChange('zuhar',-1)">−</button>
+          <span class="adj-val" id="adj_zuhar">0 मि</span>
+          <button class="adj-btn" onclick="adjChange('zuhar',+1)">+</button>
+        </div>
+      </div>
+      <div class="adj-item">
+        <div class="adj-name">असर शुरू <span style="font-family:'Amiri',serif;">عصر</span></div>
+        <div class="adj-controls">
+          <button class="adj-btn" onclick="adjChange('asr',-1)">−</button>
+          <span class="adj-val" id="adj_asr">0 मि</span>
+          <button class="adj-btn" onclick="adjChange('asr',+1)">+</button>
+        </div>
+      </div>
+      <div class="adj-item">
+        <div class="adj-name">मग़रिब शुरू <span style="font-family:'Amiri',serif;">مغرب</span></div>
+        <div class="adj-controls">
+          <button class="adj-btn" onclick="adjChange('magrib',-1)">−</button>
+          <span class="adj-val" id="adj_magrib">0 मि</span>
+          <button class="adj-btn" onclick="adjChange('magrib',+1)">+</button>
+        </div>
+      </div>
+      <div class="adj-item">
+        <div class="adj-name">इशा शुरू <span style="font-family:'Amiri',serif;">عشاء</span></div>
+        <div class="adj-controls">
+          <button class="adj-btn" onclick="adjChange('isha',-1)">−</button>
+          <span class="adj-val" id="adj_isha">0 मि</span>
+          <button class="adj-btn" onclick="adjChange('isha',+1)">+</button>
+        </div>
+      </div>
+      <div class="adj-item">
+        <div class="adj-name">सहरी <span style="font-family:'Amiri',serif;">سحری</span></div>
+        <div class="adj-controls">
+          <button class="adj-btn" onclick="adjChange('sehri',-1)">−</button>
+          <span class="adj-val" id="adj_sehri">−10 मि</span>
+          <button class="adj-btn" onclick="adjChange('sehri',+1)">+</button>
+        </div>
+      </div>
+    </div>
+    <div style="font-family:'Noto Sans Devanagari',sans-serif;font-size:9px;color:#444;text-align:center;margin-top:6px;">− = वक्त पहले करें &nbsp;|&nbsp; + = वक्त बाद में करें</div>
+    <div class="adj-saved" id="adjSaved">✓ वक्त सेव हो गया!</div>
+  </div>
+
+  <!-- Azan -->
+  <div class="azan-ctrl">
+    <span style="font-size:18px;">🔊</span>
+    <span class="azan-ctrl-lbl">अज़ान — مسجد الحرام مکہ<br><span style="font-size:9px;color:#555;font-weight:400;">हर नमाज़ पर मक्का की अज़ान बजेगी</span></sp
